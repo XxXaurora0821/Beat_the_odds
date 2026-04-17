@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+
+# Secrets / local config
+.env
+*.env
+手册.md
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Node / frontend builds
+frontend/node_modules/
+frontend/dist/
+
+# Runtime data
+data/sessions/
+data/players.json
+
+# Tooling / local metadata
+.claude/
