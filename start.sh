@@ -1,7 +1,7 @@
 #!/bin/bash
 ROOT="$(dirname "$0")"
 
-echo "=== Starting Beat The Odds ==="
+echo "=== Starting 家庭朋友德州娱乐小助手 ==="
 
 # Backend
 cd "$ROOT/backend"

@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-echo "=== Beat The Odds Setup ==="
+echo "=== 家庭朋友德州娱乐小助手 Setup ==="
 
 # Backend
 echo "→ Installing Python dependencies..."

@@ -47,8 +47,8 @@ function SessionList({ onSelect }) {
 
   return (
     <div style={{ maxWidth: 500, margin: '60px auto', padding: 20 }}>
-      <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>♠ Beat The Odds</h1>
-      <p style={{ color: '#8b949e', marginBottom: 32 }}>德州扑克助手</p>
+      <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>♠ 家庭朋友德州娱乐小助手</h1>
+      <p style={{ color: '#8b949e', marginBottom: 32 }}>Home Game 德州记录与建议工具</p>
 
       <div className="card" style={{ marginBottom: 20 }}>
         <div style={{ fontWeight: 700, marginBottom: 12 }}>{creating ? '新建局' : '历史局'}</div>
@@ -586,7 +586,7 @@ export default function App() {
           style={{ fontWeight: 800, cursor: 'pointer', color: '#e6edf3' }}
           onClick={() => { setSessionId(null); setSession(null) }}
           title="Back to sessions"
-        >♠ BTO</span>
+        >♠ HFTH</span>
         <span style={{ color: '#d29922', fontWeight: 600 }}>{session.name}</span>
         <span className="badge badge-gray">{session.small_blind}/{session.big_blind}</span>
         {hand && <span className="badge badge-blue">第 {hand.hand_number} 手</span>}

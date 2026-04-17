@@ -13,7 +13,7 @@ from storage import (
     load_all_profiles, get_or_create_profile, update_profile, update_profiles_from_hand
 )
 
-app = FastAPI(title="Beat The Odds - Poker Assistant")
+app = FastAPI(title="家庭朋友德州娱乐小助手")
 
 app.add_middleware(
     CORSMiddleware,
