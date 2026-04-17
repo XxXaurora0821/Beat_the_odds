@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { api } from '../api'
 
 const ACTION_COLORS = {
@@ -32,13 +32,22 @@ export function AdvisorPanel({ session, hand, isMyTurn }) {
   const [advice, setAdvice] = useState(null)
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState('')
+  const requestSeqRef = useRef(0)
+  const lastAutoFetchKeyRef = useRef('')
 
-  async function fetchAdvice() {
+  async function fetchAdvice(opts = {}) {
+    const { force = false, autoKey = '' } = opts
     if (!session?.id) return
+    if (!force && autoKey && lastAutoFetchKeyRef.current === autoKey) return
+    if (autoKey) lastAutoFetchKeyRef.current = autoKey
+
+    const seq = ++requestSeqRef.current
     setLoading(true)
     setErr('')
     try {
       const data = await api.getAdvice(session.id)
+      // Ignore stale responses from earlier overlapping requests.
+      if (seq !== requestSeqRef.current) return
       if (data.action && data.action !== 'error') {
         setAdvice(data)
       } else if (data.message) {
@@ -47,9 +56,10 @@ export function AdvisorPanel({ session, hand, isMyTurn }) {
         setErr(data.reasoning || 'Unknown error')
       }
     } catch (e) {
+      if (seq !== requestSeqRef.current) return
       setErr(e.message)
     } finally {
-      setLoading(false)
+      if (seq === requestSeqRef.current) setLoading(false)
     }
   }
 
@@ -57,10 +67,19 @@ export function AdvisorPanel({ session, hand, isMyTurn }) {
   useEffect(() => {
     if (isMyTurn && hand?.status === 'active') {
       setAdvice(null)
-      fetchAdvice()
+      const autoKey = [
+        session?.id ?? '',
+        hand?.id ?? '',
+        hand?.street ?? '',
+        hand?.current_actor ?? '',
+        hand?.actions?.length ?? 0,
+        hand?.board?.join(',') ?? '',
+      ].join('|')
+      fetchAdvice({ autoKey })
     }
     if (!isMyTurn) {
       setAdvice(null)
+      lastAutoFetchKeyRef.current = ''
     }
   }, [isMyTurn, hand?.current_actor, hand?.street])
 
@@ -82,7 +101,7 @@ export function AdvisorPanel({ session, hand, isMyTurn }) {
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <span style={{ fontWeight: 700, color: '#3fb950', fontSize: 15 }}>AI 建议</span>
-        <button className="btn btn-sm" onClick={fetchAdvice} disabled={loading}>
+        <button className="btn btn-sm" onClick={() => fetchAdvice({ force: true })} disabled={loading}>
           {loading ? '...' : '刷新'}
         </button>
       </div>

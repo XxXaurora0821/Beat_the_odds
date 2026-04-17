@@ -305,6 +305,7 @@ def get_advice(hand: HandState, session: SessionState, profiles: dict[str, Playe
         resp = get_client().messages.create(
             model="claude-sonnet-4-6",
             max_tokens=450,
+            temperature=0,
             system=system,
             messages=[{"role": "user", "content": user_msg}],
         )
