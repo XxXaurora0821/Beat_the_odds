@@ -108,10 +108,33 @@ def remove_player(session_id: str, name: str):
 @app.patch("/api/sessions/{session_id}/players/{name}/chips", response_model=SessionState)
 def add_chips(session_id: str, name: str, amount: float):
     session = load_session(session_id)
+    found = False
     for p in session.players:
         if p.name == name:
             p.chips += amount
+            found = True
             break
+    if not found:
+        raise HTTPException(404, f"Player {name} not found")
+    save_session(session)
+    return session
+
+
+@app.patch("/api/sessions/{session_id}/players/{name}/chips/set", response_model=SessionState)
+def set_chips(session_id: str, name: str, chips: float):
+    if chips < 0:
+        raise HTTPException(400, "筹码不能为负数")
+
+    session = load_session(session_id)
+    found = False
+    for p in session.players:
+        if p.name == name:
+            p.chips = chips
+            found = True
+            break
+    if not found:
+        raise HTTPException(404, f"Player {name} not found")
+
     save_session(session)
     return session
 

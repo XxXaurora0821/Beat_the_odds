@@ -24,6 +24,7 @@ export const api = {
   removePlayer: (sid, name) => req('DELETE', `/sessions/${sid}/players/${name}`),
   changeSeat: (sid, name, seat) => req('PATCH', `/sessions/${sid}/players/${name}/seat?seat=${seat}`),
   addChips: (sid, name, amount) => req('PATCH', `/sessions/${sid}/players/${name}/chips?amount=${amount}`),
+  setChips: (sid, name, chips) => req('PATCH', `/sessions/${sid}/players/${name}/chips/set?chips=${chips}`),
 
   // Hand
   startHand: (sid, data) => req('POST', `/sessions/${sid}/hand/start`, data),

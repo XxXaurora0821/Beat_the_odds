@@ -140,8 +140,26 @@ function SessionList({ onSelect }) {
 
 // ── Manage Players Modal ──────────────────────────────────────────────────────
 
-function PlayerRow({ p, isMe, takenByOthers, onSeatChange, onAddChips, onRemove }) {
+function PlayerRow({ p, isMe, takenByOthers, onSeatChange, onAddChips, onSetChips, onRemove }) {
   const [buyIn, setBuyIn] = useState('')
+  const [setTo, setSetTo] = useState(String(p.chips))
+
+  useEffect(() => {
+    setSetTo(String(p.chips))
+  }, [p.chips])
+
+  function submitAddChips() {
+    const n = parseFloat(buyIn)
+    if (!Number.isFinite(n)) return
+    onAddChips(n)
+    setBuyIn('')
+  }
+
+  function submitSetChips() {
+    const n = parseFloat(setTo)
+    if (!Number.isFinite(n)) return
+    onSetChips(n)
+  }
 
   return (
     <div style={{ borderBottom: '1px solid #21262d', paddingBottom: 8 }}>
@@ -170,16 +188,31 @@ function PlayerRow({ p, isMe, takenByOthers, onSeatChange, onAddChips, onRemove 
           value={buyIn}
           onChange={e => setBuyIn(e.target.value)}
           style={{ width: 100, fontSize: 12 }}
-          onKeyDown={e => e.key === 'Enter' && buyIn && (onAddChips(parseFloat(buyIn)), setBuyIn(''))}
+          onKeyDown={e => e.key === 'Enter' && buyIn && submitAddChips()}
         />
         <button
           className="btn btn-sm btn-primary"
-          onClick={() => { if (buyIn) { onAddChips(parseFloat(buyIn)); setBuyIn('') } }}
+          onClick={() => buyIn && submitAddChips()}
           disabled={!buyIn}
         >+买入</button>
         {[100, 200].map(amt => (
           <button key={amt} className="btn btn-sm" onClick={() => onAddChips(amt)}>+{amt}</button>
         ))}
+      </div>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 6 }}>
+        <input
+          type="number"
+          placeholder="改为筹码"
+          value={setTo}
+          onChange={e => setSetTo(e.target.value)}
+          style={{ width: 100, fontSize: 12 }}
+          onKeyDown={e => e.key === 'Enter' && setTo !== '' && submitSetChips()}
+        />
+        <button
+          className="btn btn-sm btn-warn"
+          onClick={() => setTo !== '' && submitSetChips()}
+          disabled={setTo === ''}
+        >设为</button>
       </div>
     </div>
   )
@@ -241,6 +274,10 @@ function ManagePlayers({ session, onUpdate, initialSeat, onClose }) {
             }}
             onAddChips={async amount => {
               const updated = await api.addChips(session.id, p.name, amount)
+              onUpdate(updated)
+            }}
+            onSetChips={async chips => {
+              const updated = await api.setChips(session.id, p.name, chips)
               onUpdate(updated)
             }}
             onRemove={p.name !== session.me ? async () => {
